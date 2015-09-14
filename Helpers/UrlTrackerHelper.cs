@@ -52,7 +52,7 @@ namespace InfoCaster.Umbraco.UrlTracker.Helpers
             return url;
         }
 
-        public static string GetName(UrlTrackerDomain domain)
+        public static string GetName(UrlTrackerDomain domain, bool includeDomian = true)
         {
             if (UrlTrackerSettings.HasDomainOnChildNode)
             {
@@ -65,7 +65,7 @@ namespace InfoCaster.Umbraco.UrlTracker.Helpers
             }
             else
             {
-                return string.Format("{0} ({1})", domain.Node.Name, domain.Name);
+                return includeDomian ? string.Format("{0} ({1})", domain.Node.Name, domain.Name) : domain.Node.Name;
             }
         }
     }

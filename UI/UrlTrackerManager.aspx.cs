@@ -1,4 +1,5 @@
-﻿using InfoCaster.Umbraco.UrlTracker.Models;
+﻿using InfoCaster.Umbraco.UrlTracker.Helpers;
+using InfoCaster.Umbraco.UrlTracker.Models;
 using InfoCaster.Umbraco.UrlTracker.Repositories;
 using InfoCaster.Umbraco.UrlTracker.UI.UserControls;
 using System;
@@ -132,6 +133,24 @@ namespace InfoCaster.Umbraco.UrlTracker.UI
                 if (gvNotFound.PageSize != PageSize)
                     gvNotFound.PageSize = PageSize;
             }
+
+            List<UrlTrackerDomain> domains = UmbracoHelper.GetDomains();
+            if (ddlRootNode.Items.Count == 1 && domains.Count > 1 || (domains.Count == 1 && new Uri(domains[0].UrlWithDomain).AbsolutePath != "/"))
+            {
+                if (ddlRootNode.Items.Count <= 1)
+                {
+                    // if there is only one site, but it is not with a root domain (ie: www.site.com but instead www.site.com/corporate) then also show the dropdown
+                    var list = domains.Select(x => new ListItem(UrlTrackerHelper.GetName(x), x.NodeId.ToString())).ToList();
+                    list.Insert(0, new ListItem("/", "-1"));
+                    ddlRootNode.DataSource = list;
+                    ddlRootNode.AppendDataBoundItems = false;
+                    ddlRootNode.DataBind();
+                }
+            }
+            else if (domains.Count <= 1)
+            {
+                lblRootNode.Visible = false;
+            }
         }
 
         protected override void OnPreRender(EventArgs e)
@@ -232,6 +251,12 @@ namespace InfoCaster.Umbraco.UrlTracker.UI
             }
         }
 
+        protected void cbSiteLevel_OnCheckedChanged(object sender, EventArgs e)
+        {
+            lblRootNode.Visible = cbSiteLevel.Checked;
+            Filter();
+        }
+
         protected void cbFilters_CheckedChanged(object sender, EventArgs e)
         {
             Filter();
@@ -242,12 +267,18 @@ namespace InfoCaster.Umbraco.UrlTracker.UI
             Filter();
         }
 
+        protected void ddlRootNode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Filter();
+        }
+
         void Filter()
         {
             Parameter showAutoEntriesParameter = new Parameter("showAutoEntries", DbType.Boolean, cbShowAutoEntries.Checked.ToString());
             Parameter showCustomEntriesParameter = new Parameter("showCustomEntries", DbType.Boolean, cbShowCustomEntries.Checked.ToString());
             Parameter showRegexEntriesParameter = new Parameter("showRegexEntries", DbType.Boolean, cbShowRegexEntries.Checked.ToString());
             Parameter searchParameter = new Parameter("keyword", DbType.String, tbSearch.Text);
+            Parameter rootNodeParameter = new Parameter("rootNode", DbType.String, lblRootNode.Visible ? ddlRootNode.SelectedValue : null);
 
             if (!_isNotFoundView)
             {
@@ -256,6 +287,7 @@ namespace InfoCaster.Umbraco.UrlTracker.UI
                 odsUrlTrackerEntries.SelectParameters.Add(showCustomEntriesParameter);
                 odsUrlTrackerEntries.SelectParameters.Add(showRegexEntriesParameter);
                 odsUrlTrackerEntries.SelectParameters.Add(searchParameter);
+                odsUrlTrackerEntries.SelectParameters.Add(rootNodeParameter);
 
                 gvUrlTracker.DataBind();
                 mvUrlTrackerFilter.SetActiveView(vwUrlTrackerFilterGrid);
@@ -290,6 +322,7 @@ namespace InfoCaster.Umbraco.UrlTracker.UI
             gvNotFound.DataBind();
             lbCreate.Visible = false;
             pnlFilters.Visible = false;
+            lblRootNode.Visible = false;
         }
 
         protected void lbUrlTrackerView_Click(object sender, EventArgs e)
@@ -300,6 +333,7 @@ namespace InfoCaster.Umbraco.UrlTracker.UI
             gvUrlTracker.DataBind();
             lbCreate.Visible = true;
             pnlFilters.Visible = true;
+            lblRootNode.Visible = cbSiteLevel.Checked;
         }
 
         protected void lbSave_Click(object sender, EventArgs e)

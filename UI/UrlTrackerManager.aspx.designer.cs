@@ -229,6 +229,24 @@ namespace InfoCaster.Umbraco.UrlTracker.UI {
         protected global::System.Web.UI.WebControls.Panel pnlFilter;
         
         /// <summary>
+        /// lblRootNode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lblRootNode;
+        
+        /// <summary>
+        /// ddlRootNode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlRootNode;
+        
+        /// <summary>
         /// tbSearch control.
         /// </summary>
         /// <remarks>
@@ -245,6 +263,15 @@ namespace InfoCaster.Umbraco.UrlTracker.UI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlFilters;
+        
+        /// <summary>
+        /// cbSiteLevel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbSiteLevel;
         
         /// <summary>
         /// cbShowAutoEntries control.

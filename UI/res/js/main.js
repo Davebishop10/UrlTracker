@@ -1,5 +1,7 @@
 ﻿var $tbSearch;
+
 function pageLoad() {
+
     $("*[data-toggle='tooltip']").tooltip({ container: "body", html: true });
 
     $(".wrap input[type='hidden']").addClass("redirect-to").addClass("redirect-to-node");
@@ -130,7 +132,9 @@ function pageLoad() {
             $tbSearch.on("keyup", tbSearchOnKeyUp);
     }
 
-    Sys.WebForms.PageRequestManager.getInstance().add_endRequest(endRequestHandler);
+    if (typeof Sys !== 'undefined') {
+        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(endRequestHandler);
+    }
 }
 
 function endRequestHandler(sender, args) {

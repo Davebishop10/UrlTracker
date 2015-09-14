@@ -85,7 +85,7 @@ namespace InfoCaster.Umbraco.UrlTracker.Helpers
         }
 
         static List<UrlTrackerDomain> _urlTrackerDomains;
-        internal static List<UrlTrackerDomain> GetDomains()
+        public static List<UrlTrackerDomain> GetDomains()
         {
             if (_urlTrackerDomains == null)
             {

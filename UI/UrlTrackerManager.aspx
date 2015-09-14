@@ -73,6 +73,7 @@
                             <asp:AsyncPostBackTrigger ControlID="lbReturnFromNew" />
                             <asp:AsyncPostBackTrigger ControlID="lbCreateNew" />
                             <asp:AsyncPostBackTrigger ControlID="btnCreateDummy" />
+                            <asp:AsyncPostBackTrigger ControlID="cbSiteLevel"/>
                         </Triggers>
                         <ContentTemplate>
                             <asp:Panel runat="server" ID="pnlBreadcrumb" EnableViewState="false">
@@ -103,11 +104,19 @@
                                         </asp:MultiView>
                                     </div>
                                     <asp:Panel runat="server" ID="pnlFilter" CssClass="form-inline filters clearfix">
+                                        <label class="search" for="ddlRootNode" id="lblRootNode" runat="server" Visible="False">
+                                            <asp:DropDownList runat="server" ID="ddlRootNode" ClientIDMode="Static" AppendDataBoundItems="true" DataTextField="Text" DataValueField="Value" CssClass="input-xlarge" OnSelectedIndexChanged="ddlRootNode_SelectedIndexChanged" AutoPostBack="True">
+                                                <asp:ListItem Value="-1">/</asp:ListItem>
+                                            </asp:DropDownList>
+                                        </label>
                                         <label class="search">
                                             <asp:TextBox runat="server" ID="tbSearch" ClientIDMode="Static" AutoPostBack="true" OnTextChanged="tbSearch_TextChanged" placeholder="Search" AutoCompleteType="None" autocomplete="off" />
                                         </label>
                                         <asp:Panel runat="server" ID="pnlFilters" CssClass="right">
                                             Filter: 
+                                            <label class="checkbox">
+                                                <asp:CheckBox runat="server" ID="cbSiteLevel" Checked="False" AutoPostBack="True" OnCheckedChanged="cbSiteLevel_OnCheckedChanged"/> Site Level
+                                            </label>
                                             <label class="checkbox">
                                                 <asp:CheckBox runat="server" ID="cbShowAutoEntries" Checked="true" AutoPostBack="true" OnCheckedChanged="cbFilters_CheckedChanged" /> Automatic entries
                                             </label>
@@ -122,10 +131,12 @@
                                     <asp:UpdatePanel runat="server" ID="upUrlTrackerGrid" UpdateMode="Conditional" ChildrenAsTriggers="false">
                                         <Triggers>
                                             <asp:AsyncPostBackTrigger ControlID="tbSearch" />
+                                            <asp:AsyncPostBackTrigger ControlID="cbSiteLevel"/>
                                             <asp:AsyncPostBackTrigger ControlID="cbShowAutoEntries" />
                                             <asp:AsyncPostBackTrigger ControlID="cbShowCustomEntries" />
                                             <asp:AsyncPostBackTrigger ControlID="cbShowRegexEntries" />
                                             <asp:AsyncPostBackTrigger ControlID="ddlPageSize" />
+                                            <asp:AsyncPostBackTrigger ControlID="ddlRootNode"/>
                                         </Triggers>
                                         <ContentTemplate>
                                             <asp:MultiView runat="server" ID="mvGridViews" ActiveViewIndex="0">
@@ -148,6 +159,7 @@
                                                                                 </ItemTemplate>
                                                                             </asp:TemplateField>
                                                                             <asp:BoundField DataField="RedirectRootNodeName" HeaderText="Site" SortExpression="RedirectRootNodeName" />
+                                                                            <asp:BoundField DataField="RedirectHttpCode" HeaderText="Type" SortExpression="RedirectHttpCode" />
                                                                             <asp:BoundField DataField="CalculatedOldUrl" HeaderText="Old URL / Regex" SortExpression="CalculatedOldUrl" />
                                                                             <asp:BoundField DataField="CalculatedRedirectUrl" HeaderText="New URL" SortExpression="CalculatedRedirectUrl" />
                                                                             <asp:BoundField DataField="Notes" HeaderText="Notes" SortExpression="Notes" />

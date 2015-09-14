@@ -205,7 +205,7 @@ namespace InfoCaster.Umbraco.UrlTracker.Repositories
             return GetNotFoundEntries().Single(x => x.OldUrl.ToLower() == url.ToLower() && x.RedirectRootNodeId == redirectRootNodeId);
         }
 
-        public static List<UrlTrackerModel> GetUrlTrackerEntries(int? maximumRows, int? startRowIndex, string sortExpression = "", bool _404 = false, bool include410Gone = false, bool showAutoEntries = true, bool showCustomEntries = true, bool showRegexEntries = true, string keyword = "", bool onlyForcedRedirects = false)
+        public static List<UrlTrackerModel> GetUrlTrackerEntries(int? maximumRows, int? startRowIndex, string sortExpression = "", bool _404 = false, bool include410Gone = false, bool showAutoEntries = true, bool showCustomEntries = true, bool showRegexEntries = true, string keyword = "", bool onlyForcedRedirects = false, string rootNode = "")
         {
             List<UrlTrackerModel> urlTrackerEntries = new List<UrlTrackerModel>();
             int intKeyword = 0;
@@ -213,6 +213,8 @@ namespace InfoCaster.Umbraco.UrlTracker.Repositories
             string query = "SELECT * FROM icUrlTracker WHERE Is404 = @is404 AND RedirectHttpCode != @redirectHttpCode";
             if (onlyForcedRedirects)
                 query = string.Concat(query, " AND ForceRedirect = 1");
+            if (!string.IsNullOrWhiteSpace(rootNode))
+                query = string.Concat(query, " AND RedirectRootNodeId = @rootNode");
 
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -226,6 +228,8 @@ namespace InfoCaster.Umbraco.UrlTracker.Repositories
                 _sqlHelper.CreateParameter("is404", _404 ? 1 : 0),
                 _sqlHelper.CreateParameter("redirectHttpCode", include410Gone ? 0 : 410)
             };
+            if (!string.IsNullOrWhiteSpace(rootNode)) 
+                parameters.Add(_sqlHelper.CreateParameter("rootNode", rootNode));
             if (!string.IsNullOrEmpty(keyword))
                 parameters.Add(_sqlHelper.CreateParameter("keyword", "%" + keyword + "%"));
             if (intKeyword != 0)
@@ -309,10 +313,10 @@ namespace InfoCaster.Umbraco.UrlTracker.Repositories
             return urlTrackerEntries;
         }
 
-        public static List<UrlTrackerModel> GetNotFoundEntries(int? maximumRows, int? startRowIndex, string sortExpression = "", string keyword = "")
+        public static List<UrlTrackerModel> GetNotFoundEntries(int? maximumRows, int? startRowIndex, string sortExpression = "", string keyword = "", string rootNode ="")
         {
             List<UrlTrackerModel> notFoundEntries = new List<UrlTrackerModel>();
-            List<UrlTrackerModel> urlTrackerEntries = GetUrlTrackerEntries(maximumRows, startRowIndex, sortExpression, true);
+            List<UrlTrackerModel> urlTrackerEntries = GetUrlTrackerEntries(maximumRows, startRowIndex, sortExpression, true, rootNode:rootNode);
             foreach (var notFoundEntry in urlTrackerEntries.GroupBy(x => x.OldUrl).Select(x => new
             {
                 Count = x.Count(),
@@ -377,9 +381,9 @@ namespace InfoCaster.Umbraco.UrlTracker.Repositories
             return notFoundEntries;
         }
 
-        public static List<UrlTrackerModel> GetUrlTrackerEntries(string sortExpression = "", bool showAutoEntries = true, bool showCustomEntries = true, bool showRegexEntries = true, string keyword = "")
+        public static List<UrlTrackerModel> GetUrlTrackerEntries(string sortExpression = "", bool showAutoEntries = true, bool showCustomEntries = true, bool showRegexEntries = true, string keyword = "", string rootNode = "")
         {
-            return GetUrlTrackerEntries(null, null, sortExpression, showAutoEntries: showAutoEntries, showCustomEntries: showCustomEntries, showRegexEntries: showRegexEntries, keyword: keyword);
+            return GetUrlTrackerEntries(null, null, sortExpression, showAutoEntries: showAutoEntries, showCustomEntries: showCustomEntries, showRegexEntries: showRegexEntries, keyword: keyword, rootNode:rootNode);
         }
 
         public static List<UrlTrackerModel> GetUrlTrackerEntries(string sortExpression)
